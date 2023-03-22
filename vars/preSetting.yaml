@@ -1,0 +1,3 @@
+# crio install config
+crio: true
+crio_version: 1.26

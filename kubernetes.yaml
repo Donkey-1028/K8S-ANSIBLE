@@ -1,0 +1,5 @@
+---
+- name: Kubernetes Install
+  hosts: master,worker
+  roles:
+    - preSetting

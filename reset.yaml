@@ -1,0 +1,5 @@
+---
+- name: Kubernetes Reset
+  hosts: master,worker
+  roles:
+    - reset

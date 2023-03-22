@@ -1,0 +1,46 @@
+---
+- name: delete kubernetes node hosts
+  lineinfile:
+    path: /etc/hosts
+    line: "{{ hostvars[item]['ansible_default_ipv4']['address'] }} {{ hostvars[item]['ansible_facts']['fqdn'] }}"
+    state: absent
+  with_items:
+  - "{{ groups['master'] }}"
+  - "{{ groups['worker'] }}"
+
+- name: delete iproute-tc package
+  dnf:
+    name: iproute-tc
+    state: absent
+
+- name: module remove
+  shell: "modprobe -r {{ item }}"
+  with_items:
+    - overlay
+    - br_netfilter
+
+- name: delete modules load file
+  file:
+    path: /etc/modules-load.d/k8s.conf
+    state: absent
+
+- name: delete kernel parameter
+  file:
+    path: /etc/sysctl.d/k8s.conf
+    state: absent
+
+- name: kernel parameter reload
+    shell: sysctl --system
+
+- name: crio enable and start
+  systemd:
+    name: crio
+    state: stopped
+    enabled: false
+  when: crio
+
+- name: delete crio package
+  dnf:
+    name: cri-o
+    state: absent
+  when: crio
